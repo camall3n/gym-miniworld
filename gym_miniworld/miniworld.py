@@ -461,7 +461,8 @@ class MiniWorldEnv(gym.Env):
         window_width=800,
         window_height=600,
         params=DEFAULT_PARAMS,
-        domain_rand=False
+        domain_rand=False,
+        ignore_carrying_intersect=False,
     ):
         # Action enumeration for this environment
         self.actions = MiniWorldEnv.Actions
@@ -487,6 +488,9 @@ class MiniWorldEnv(gym.Env):
 
         # Domain randomization enable/disable flag
         self.domain_rand = domain_rand
+
+        # Ignore when the carried item intersects things
+        self.ignore_carrying_intersect = ignore_carrying_intersect
 
         # Window for displaying the environment to humans
         self.window = None
@@ -623,7 +627,8 @@ class MiniWorldEnv(gym.Env):
         if carrying:
             next_carrying_pos = self._get_carry_pos(next_pos, carrying)
 
-            if self.intersect(carrying, next_carrying_pos, carrying.radius):
+            if (not self.ignore_carrying_intersect
+                and self.intersect(carrying, next_carrying_pos, carrying.radius)):
                 return False
 
             carrying.pos = next_carrying_pos
