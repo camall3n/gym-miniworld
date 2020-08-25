@@ -4,9 +4,9 @@ from gym import spaces
 from ..miniworld import MiniWorldEnv, Room
 from ..entity import Box, Key, Door
 
-class LockBox(MiniWorldEnv):
+class Vault(MiniWorldEnv):
     """
-    Multi-room environment with a locked door
+    Multi-room environment with treasure behind a locked door
     The agent must:
         - navigate to the key
         - pick up the key
@@ -91,12 +91,14 @@ class LockBox(MiniWorldEnv):
         for action in self.get_next_skill_action(action):
             obs, reward, done, info = super().step(action)
 
-            if self.agent.carrying is self.key:
-                if self.near(self.key, self.door) and action == self.actions.toggle:
+            if action == self.actions.drop and self.key.pos[1] < .5:
+                self.key.pos[1] = .8
+            if (action == self.actions.toggle and self.agent.carrying is self.key
+                and self.near(self.key, self.door)):
                     self.agent.carrying = None
                     self.entities.remove(self.key)
                     self.entities.remove(self.door)
-            if self.agent.carrying is self.gold:
+            if action == self.actions.pickup and self.agent.carrying is self.gold:
                 reward += self._reward()
                 done = True
 
