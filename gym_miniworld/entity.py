@@ -11,6 +11,7 @@ COLORS = {
     'blue'  : np.array([0.0, 0.0, 1.0]),
     'purple': np.array([0.44, 0.15, 0.76]),
     'yellow': np.array([1.00, 1.00, 0.00]),
+    'gold': np.array([1.00, 0.85, 0.10]),
     'grey'  : np.array([0.39, 0.39, 0.39])
 }
 

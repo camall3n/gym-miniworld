@@ -71,7 +71,7 @@ class LockBox(MiniWorldEnv):
                         # pos=(-4,.8,4),
                     )
         self.box = self.place_entity(
-                        Box(color='red', size=1.0),
+                        Box(color='gold', size=1.0),
                         room=room3,
                         pos=(-5,0,-5),)
 
