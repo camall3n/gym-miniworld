@@ -79,7 +79,8 @@ class Room:
         floor_tex='floor_tiles_bw',
         wall_tex='concrete',
         ceil_tex='concrete_tiles',
-        no_ceiling=False
+        no_ceiling=False,
+        name=None
     ):
         # The outlien should have shape Nx2
         assert len(outline.shape) == 2
@@ -124,6 +125,9 @@ class Room:
 
         # No ceiling flag
         self.no_ceiling = no_ceiling
+
+        # Room name
+        self.name = name
 
         # Texture names
         self.wall_tex_name = wall_tex
@@ -775,7 +779,8 @@ class MiniWorldEnv(gym.Env):
         max_x=None,
         min_z=None,
         max_z=None,
-        max_y=None
+        max_y=None,
+        name=None,
     ):
         """
         Connect two rooms along facing edges
@@ -848,6 +853,7 @@ class MiniWorldEnv(gym.Env):
             floor_tex=room_a.floor_tex_name,
             ceil_tex=room_a.ceil_tex_name,
             no_ceiling=room_a.no_ceiling,
+            name=name,
         )
 
         self.rooms.append(room)
