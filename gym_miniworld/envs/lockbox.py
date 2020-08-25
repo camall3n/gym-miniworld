@@ -91,17 +91,14 @@ class LockBox(MiniWorldEnv):
         for action in self.get_next_skill_action(action):
             obs, reward, done, info = super().step(action)
 
-            if self.agent.carrying:
+            if self.agent.carrying is self.key:
                 if self.near(self.key, self.door) and action == self.actions.toggle:
-                    self.entities.remove(self.key)
                     self.agent.carrying = None
+                    self.entities.remove(self.key)
                     self.entities.remove(self.door)
-            if self.agent.carrying:
-                print(self.agent.carrying)
-                print(self.gold)
-                if self.agent.carrying is self.gold:
-                    reward += self._reward()
-                    done = True
+            if self.agent.carrying is self.gold:
+                reward += self._reward()
+                done = True
 
             experiences['obs'].append(obs)
             experiences['reward'].append(reward)
