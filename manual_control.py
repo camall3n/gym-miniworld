@@ -85,6 +85,20 @@ def on_key_press(symbol, modifiers):
     elif symbol == key.ENTER:
         step(env.actions.done)
 
+    elif symbol == key.SPACE:
+        step(env.actions.toggle)
+
+    elif symbol == key._1:
+        step(env.actions.skill1)
+    elif symbol == key._2:
+        step(env.actions.skill2)
+    elif symbol == key._3:
+        step(env.actions.skill3)
+    elif symbol == key._4:
+        step(env.actions.skill4)
+    elif symbol == key._5:
+        step(env.actions.skill5)
+
 @env.unwrapped.window.event
 def on_key_release(symbol, modifiers):
     pass

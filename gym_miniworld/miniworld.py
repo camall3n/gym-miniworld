@@ -453,6 +453,13 @@ class MiniWorldEnv(gym.Env):
         # Done completing task
         done = 7
 
+        # Skills
+        skill1 = 8
+        skill2 = 9
+        skill3 = 10
+        skill4 = 11
+        skill5 = 12
+
     def __init__(
         self,
         max_episode_steps=1500,
@@ -651,7 +658,8 @@ class MiniWorldEnv(gym.Env):
         if carrying:
             pos = self._get_carry_pos(self.agent.pos, carrying)
 
-            if self.intersect(carrying, pos, carrying.radius):
+            if (not self.ignore_carrying_intersect
+                and self.intersect(carrying, pos, carrying.radius)):
                 self.agent.dir = orig_dir
                 return False
 

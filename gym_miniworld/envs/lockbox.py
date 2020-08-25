@@ -2,7 +2,7 @@ import numpy as np
 import math
 from gym import spaces
 from ..miniworld import MiniWorldEnv, Room
-from ..entity import Box, Key
+from ..entity import Box, Key, Door
 
 class LockBox(MiniWorldEnv):
     """
@@ -65,29 +65,62 @@ class LockBox(MiniWorldEnv):
         self.connect_rooms(room4, room3, min_x=-5, max_x=-3, max_y=2.2)
 
         self.key = self.place_entity(
-                        Key(color='yellow'),
-                        room=room2,
-                        pos=(5,.8,-5),
-                        # pos=(-4,.8,4),
-                    )
-        self.box = self.place_entity(
-                        Box(color='gold', size=1.0),
-                        room=room3,
-                        pos=(-5,0,-5),)
+            Key(color='yellow'),
+            room=room2,
+            pos=np.array([5,.8,-5]),
+        )
+
+        self.door = self.place_entity(
+            Door(),
+            pos=np.array([-4,0,-8]),
+            dir=math.pi/2,
+        )
+
+        self.gold = self.place_entity(
+            Box(color='gold', size=0.5),
+            room=room4,
+            pos=np.array([-4,.9,-12]),
+        )
 
         self.place_agent(room=room0, min_x=-5, max_x=-5, min_z=5, max_z=5, dir=math.pi/4)
 
         self.ignore_carrying_intersect = True
 
     def step(self, action):
-        obs, reward, done, info = super().step(action)
+        experiences = {'obs': [], 'reward': [], 'done': [], 'info': [], 'skills_valid': []}
+        for action in self.get_next_skill_action(action):
+            obs, reward, done, info = super().step(action)
 
-        if self.agent.carrying:
-            if self.near(self.key, self.box):
-                self.entities.remove(self.agent.carrying)
-                self.agent.carrying = None
-                print('unlocked!')
-                reward += self._reward()
-                done = True
+            if self.agent.carrying:
+                if self.near(self.key, self.door) and action == self.actions.toggle:
+                    self.entities.remove(self.key)
+                    self.agent.carrying = None
+                    self.entities.remove(self.door)
+            if self.agent.carrying:
+                print(self.agent.carrying)
+                print(self.gold)
+                if self.agent.carrying is self.gold:
+                    reward += self._reward()
+                    done = True
 
+            experiences['obs'].append(obs)
+            experiences['reward'].append(reward)
+            experiences['done'].append(done)
+            experiences['info'].append(info)
+
+            if done:
+                break
+
+        obs, reward, done = experiences['obs'][-1], sum(experiences['reward']), experiences['done'][-1]
+        if len(experiences['obs']) == 1:
+            info = experiences['info']
+        else:
+            info = experiences
         return obs, reward, done, info
+
+    def get_next_skill_action(self, skill):
+        if skill == self.actions.skill1:
+            for i in range(10):
+                yield self.actions.move_forward
+        else:
+            yield skill
