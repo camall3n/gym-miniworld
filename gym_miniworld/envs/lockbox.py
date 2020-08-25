@@ -8,9 +8,12 @@ class LockBox(MiniWorldEnv):
     """
     Multi-room environment with a locked door
     The agent must:
-        - pick up the key,
+        - navigate to the key
+        - pick up the key
+        - navigate to the door
         - use the key to open the door
-        - then collect the treasure
+        - navigate to the treasure
+        - collect the treasure
     """
 
     def __init__(self, **kwargs):
@@ -23,7 +26,7 @@ class LockBox(MiniWorldEnv):
         self.action_space = spaces.Discrete(self.actions.move_forward+1)
 
     def _gen_world(self):
-        # Top-left room
+        # Bottom-left room
         room0 = self.add_rect_room(
             min_x=-7, max_x=-1,
             min_z=1 , max_z=7,
@@ -41,11 +44,17 @@ class LockBox(MiniWorldEnv):
             min_z=-7, max_z=-1,
             wall_tex='wood',
         )
-        # Bottom-left room
+        # Top-left room
         room3 = self.add_rect_room(
             min_x=-7, max_x=-1,
             min_z=-7, max_z=-1,
             wall_tex='rock',
+        )
+        # Treasure room
+        room4 = self.add_rect_room(
+            min_x=-7, max_x=-1,
+            min_z=-15, max_z=-9,
+            wall_tex='stucco',
         )
 
         # Add openings to connect the rooms together
@@ -53,6 +62,7 @@ class LockBox(MiniWorldEnv):
         self.connect_rooms(room1, room2, min_x=3, max_x=5, max_y=2.2)
         self.connect_rooms(room2, room3, min_z=-5, max_z=-3, max_y=2.2)
         self.connect_rooms(room3, room0, min_x=-5, max_x=-3, max_y=2.2)
+        self.connect_rooms(room4, room3, min_x=-5, max_x=-3, max_y=2.2)
 
         self.key = self.place_entity(
                         Key(color='yellow'),
